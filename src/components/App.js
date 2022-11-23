@@ -12,6 +12,22 @@ export default function App({ $target }) {
       title: "완료되지 않은 일들",
       todos: [],
     },
+    onDrop: async (todoId) => {
+      const nextTodos = [...this.state.todos];
+      const todoIndex = nextTodos.findIndex((todo) => todo._id === todoId);
+
+      nextTodos[todoIndex].isCompleted = false;
+      this.setState({
+        ...this.state,
+        todos: nextTodos,
+      });
+
+      await request(`/${todoId}/toggle`, {
+        method: "PUT",
+      });
+
+      await fetchTodos();
+    },
   });
 
   const completedTodoList = new TodoList({
@@ -19,6 +35,22 @@ export default function App({ $target }) {
     initialState: {
       title: "완료된 일들",
       todos: [],
+    },
+    onDrop: async (todoId) => {
+      const nextTodos = [...this.state.todos];
+      const todoIndex = nextTodos.findIndex((todo) => todo._id === todoId);
+
+      nextTodos[todoIndex].isCompleted = true;
+      this.setState({
+        ...this.state,
+        todos: nextTodos,
+      });
+
+      await request(`/${todoId}/toggle`, {
+        method: "PUT",
+      });
+
+      await fetchTodos();
     },
   });
 
@@ -44,4 +76,6 @@ export default function App({ $target }) {
       todos,
     });
   };
+
+  fetchTodos();
 }
