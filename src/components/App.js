@@ -2,8 +2,22 @@ import { request } from "../apis/api.js";
 import TodoList from "./TodoList.js";
 // import TaskQueue from "./TaskQueue.js";
 import SyncTaskManager from "./SyncTaskManager.js";
+import TodoInput from "./TodoInput.js";
 
 export default function App({ $target }) {
+  new TodoInput({
+    $target,
+    onEnter: async (value) => {
+      await request("", {
+        method: "POST",
+        body: JSON.stringify({
+          content: value,
+          isCompleted: false,
+        }),
+      });
+    },
+  });
+
   // const tasks = new TaskQueue();
   const tasks = new SyncTaskManager();
 
@@ -46,6 +60,7 @@ export default function App({ $target }) {
       todos: nextTodos,
     });
 
+    tasks.removeTasks(`/${todoId}`);
     tasks.addTask({
       url: `/${todoId}`,
       method: "DELETE",
